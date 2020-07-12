@@ -1,26 +1,27 @@
-const continentsSelect = document.querySelector('#continent-select');
-
+const continentsSelect = document.querySelector("#continent-select");
+const countriesSelect = document.querySelector("#countries-select");
 
 function fetchQuery(query, variables?: any) {
-    return fetch('https://countries.trevorblades.com/', {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            query,
-            variables
-        })
-    }).then((response: Response) => {
-        return response.json();
-    })
+  return fetch("https://countries.trevorblades.com/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query,
+      variables,
+    }),
+  }).then((response: Response) => {
+    return response.json();
+  });
 }
 
-continentsSelect.addEventListener('change', (e: Event) => {
-    const selectContinent = (<HTMLSelectElement>e.target).value;
-    console.log(selectContinent);
-    
-    fetchQuery(`
+continentsSelect.addEventListener("change", (e: Event) => {
+  const selectContinent = (<HTMLSelectElement>e.target).value;
+  console.log(selectContinent);
+
+  fetchQuery(
+    `
         query getCountries($code: ID!) {
             continent(code: $code) {
                 countries {
@@ -28,15 +29,17 @@ continentsSelect.addEventListener('change', (e: Event) => {
                 }
             }
         }
-    `, {code: selectContinent}).then((data) => {
-        const options = data.data.continent.countries.map(el => {
-            return `<option value="${el.name}">${el.name}</option>`
-        }).join('');
-        continentsSelect.innerHTML += options;
-    })
-})
-
-
+    `,
+    { code: selectContinent }
+  ).then((data) => {
+    const options = data.data.continent.countries
+      .map((el) => {
+        return `<option value="${el.name}">${el.name}</option>`;
+      })
+      .join("");
+    countriesSelect.innerHTML += options;
+  });
+});
 
 fetchQuery(`
     query {
@@ -46,9 +49,10 @@ fetchQuery(`
         }
     }
 `).then((data) => {
-    const options = data.data.continents.map(el => {
-        return `<option value="${el.code}">${el.name}</option>`
-    }).join('');
-    continentsSelect.innerHTML += options;
+  const options = data.data.continents
+    .map((el) => {
+      return `<option value="${el.code}">${el.name}</option>`;
+    })
+    .join("");
+  continentsSelect.innerHTML += options;
 });
-
